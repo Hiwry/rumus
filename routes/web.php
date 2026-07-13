@@ -54,6 +54,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/configuracoes', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('/configuracoes', [SettingsController::class, 'update'])->name('settings.update');
 
+        // Change Password
+        Route::get('/alterar-senha', [AuthController::class, 'showChangePassword'])->name('password.change');
+        Route::post('/alterar-senha', [AuthController::class, 'updatePassword'])->name('password.update');
+
         // Categories & Status
         Route::get('/categorias-status', [CategoryStatusController::class, 'index'])->name('categories.index');
         Route::post('/categorias-status', [CategoryStatusController::class, 'update'])->name('categories.update');

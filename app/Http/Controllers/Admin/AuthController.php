@@ -47,4 +47,33 @@ class AuthController extends Controller
         $request->session()->forget(['admin_logged_in', 'admin_user_id', 'admin_user_name', 'admin_user_email']);
         return redirect()->route('admin.login')->with('success', 'Você saiu do painel com segurança.');
     }
+
+    public function showChangePassword()
+    {
+        return view('admin.auth.change-password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password'     => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'A senha atual é obrigatória.',
+            'new_password.required'     => 'A nova senha é obrigatória.',
+            'new_password.min'          => 'A nova senha deve ter pelo menos 6 caracteres.',
+            'new_password.confirmed'    => 'A confirmação da nova senha não confere.',
+        ]);
+
+        $user = User::find(session('admin_user_id'));
+
+        if (!$user || !Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'A senha atual está incorreta.']);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return back()->with('success', 'Senha alterada com sucesso!');
+    }
 }
