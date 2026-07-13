@@ -21,16 +21,6 @@ Route::get('/', function () {
 Route::get('/catalogo', [ProductController::class, 'index'])->name('product.catalog');
 Route::get('/produto/{slug?}', [ProductController::class, 'show'])->name('product.show');
 
-// Temporary route to diagnose the production 500 error
-Route::get('/debug-log', function () {
-    $logPath = storage_path('logs/laravel.log');
-    if (!file_exists($logPath)) {
-        return 'Arquivo de log não encontrado em: ' . $logPath;
-    }
-    $logContent = file_get_contents($logPath);
-    return '<pre style="word-wrap: break-word; white-space: pre-wrap;">' . htmlspecialchars(substr($logContent, -15000)) . '</pre>';
-});
-
 // ── Admin Auth ────────────────────────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login',  [AuthController::class, 'showLogin'])->name('login');

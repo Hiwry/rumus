@@ -71,14 +71,16 @@ class DashboardController extends Controller
         $hourExpr = $isSqlite ? "strftime('%H', created_at)" : "HOUR(created_at)";
 
         $hourlyViews = PageView::select(
-                            DB::raw("CAST($hourExpr AS INTEGER) as hour"),
+                            DB::raw("$hourExpr as hour"),
                             DB::raw('COUNT(*) as count')
                         )
                         ->whereDate('created_at', today())
                         ->groupBy('hour')
                         ->orderBy('hour')
                         ->get()
-                        ->keyBy('hour');
+                        ->mapWithKeys(function ($item) {
+                            return [(int) $item->hour => $item];
+                        });
 
         return view('admin.dashboard', compact(
             'totalProducts', 'activeProducts',
