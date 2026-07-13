@@ -42,10 +42,9 @@
                             <label class="form-label">Categoria *</label>
                             <select name="category" class="form-control {{ $errors->has('category') ? 'is-invalid' : '' }}" required>
                                 <option value="">Selecione...</option>
-                                <option value="sublimacao" {{ old('category') === 'sublimacao' ? 'selected' : '' }}>Sublimação</option>
-                                <option value="serigrafia" {{ old('category') === 'serigrafia' ? 'selected' : '' }}>Serigrafia</option>
-                                <option value="dtf"        {{ old('category') === 'dtf'        ? 'selected' : '' }}>DTF</option>
-                                <option value="ecobag"     {{ old('category') === 'ecobag'     ? 'selected' : '' }}>Ecobag</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat }}" {{ old('category') === $cat ? 'selected' : '' }}>{{ ucfirst($cat) }}</option>
+                                @endforeach
                             </select>
                             @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>

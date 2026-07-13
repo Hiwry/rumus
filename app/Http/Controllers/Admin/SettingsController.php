@@ -16,7 +16,29 @@ class SettingsController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->except(['_token', '_method']);
+        // Handle site logo file upload
+        if ($request->hasFile('site_logo')) {
+            $request->validate([
+                'site_logo' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096'
+            ]);
+            $file = $request->file('site_logo');
+            $filename = 'logo_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/uploads'), $filename);
+            SiteSetting::set('site_logo', 'images/uploads/' . $filename);
+        }
+
+        // Handle site favicon file upload (support .ico, .png, etc.)
+        if ($request->hasFile('site_favicon')) {
+            $request->validate([
+                'site_favicon' => 'file|mimes:ico,png,jpeg,jpg,gif,webp|max:2048'
+            ]);
+            $file = $request->file('site_favicon');
+            $filename = 'favicon_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/uploads'), $filename);
+            SiteSetting::set('site_favicon', 'images/uploads/' . $filename);
+        }
+
+        $data = $request->except(['_token', '_method', 'site_logo', 'site_favicon']);
 
         foreach ($data as $key => $value) {
             SiteSetting::set($key, $value);

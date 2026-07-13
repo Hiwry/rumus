@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductAdminController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\CategoryStatusController;
+use App\Http\Controllers\Admin\LandingImageController;
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 Route::get('/', function () {
@@ -51,5 +53,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Settings
         Route::get('/configuracoes', [SettingsController::class, 'index'])->name('settings.index');
         Route::post('/configuracoes', [SettingsController::class, 'update'])->name('settings.update');
+
+        // Categories & Status
+        Route::get('/categorias-status', [CategoryStatusController::class, 'index'])->name('categories.index');
+        Route::post('/categorias-status', [CategoryStatusController::class, 'update'])->name('categories.update');
+
+        // Landing Images CRUD
+        Route::get('/imagens', [LandingImageController::class, 'index'])->name('images.index');
+        Route::post('/imagens', [LandingImageController::class, 'store'])->name('images.store');
+        Route::put('/imagens/{landingImage}', [LandingImageController::class, 'update'])->name('images.update');
+        Route::delete('/imagens/{landingImage}', [LandingImageController::class, 'destroy'])->name('images.destroy');
     });
 });

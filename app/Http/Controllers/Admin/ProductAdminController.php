@@ -27,12 +27,17 @@ class ProductAdminController extends Controller
                           ->orderBy('created_at', 'desc')
                           ->paginate(15);
 
-        return view('admin.products.index', compact('products'));
+        $categoriesString = \App\Models\SiteSetting::get('product_categories', 'sublimacao,serigrafia,dtf,ecobag');
+        $categories = array_filter(array_map('trim', explode(',', $categoriesString)));
+
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function create()
     {
-        return view('admin.products.create');
+        $categoriesString = \App\Models\SiteSetting::get('product_categories', 'sublimacao,serigrafia,dtf,ecobag');
+        $categories = array_filter(array_map('trim', explode(',', $categoriesString)));
+        return view('admin.products.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -48,7 +53,9 @@ class ProductAdminController extends Controller
 
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+        $categoriesString = \App\Models\SiteSetting::get('product_categories', 'sublimacao,serigrafia,dtf,ecobag');
+        $categories = array_filter(array_map('trim', explode(',', $categoriesString)));
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, Product $product)
@@ -77,15 +84,19 @@ class ProductAdminController extends Controller
     }
 
     // ── Helpers ─────────────────────────────────────────────────────────────
-
+    
     private function validateProduct(Request $request, ?int $ignoreId = null): array
     {
+        $categoriesString = \App\Models\SiteSetting::get('product_categories', 'sublimacao,serigrafia,dtf,ecobag');
+        $allowedCategories = array_filter(array_map('trim', explode(',', $categoriesString)));
+        $allowedCategoriesCsv = implode(',', $allowedCategories);
+
         return $request->validate([
             'name'          => 'required|string|max:255',
             'slug'          => 'required|string|unique:products,slug,' . $ignoreId . '|max:255',
             'price'         => 'required|numeric|min:0',
             'tag'           => 'nullable|string|max:50',
-            'category'      => 'required|in:sublimacao,serigrafia,dtf,ecobag',
+            'category'      => 'required|in:' . $allowedCategoriesCsv,
             'type'          => 'required|in:unissex,infantil,feminino,masculino',
             'description'   => 'required|string',
             'rating'        => 'required|integer|min:1|max:5',

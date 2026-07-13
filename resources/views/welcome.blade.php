@@ -4,9 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rumus - Camisas Personalizadas e Ecobags</title>
+    <link rel="icon" type="{{ Str::endsWith($siteSettings['site_favicon'] ?? '', '.ico') ? 'image/x-icon' : 'image/png' }}" href="{{ asset($siteSettings['site_favicon'] ?? 'favicon.ico') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @if(isset($siteSettings))
+    <style>
+        :root {
+            @if(!empty($siteSettings['primary_color']))
+                --primary: {{ $siteSettings['primary_color'] }};
+                --primary-hover: {{ $siteSettings['primary_color'] }}cc;
+            @endif
+            @if(!empty($siteSettings['accent_color']))
+                --accent: {{ $siteSettings['accent_color'] }};
+            @endif
+        }
+        .hero-image-container {
+            position: relative;
+            min-height: 520px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .hero-image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 1;
+        }
+        .hero-image-container img.active {
+            opacity: 1;
+            z-index: 2;
+        }
+    </style>
+    @endif
 </head>
 <body>
+    @if(isset($siteSettings) && ($siteSettings['show_banner'] ?? '0') == '1')
+    <div class="promo-banner" style="background: var(--primary, #000); color: #fff; text-align: center; padding: 8px 12px; font-size: 11px; font-family: var(--font-title); font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">
+        {{ str_replace('🚀', '', $siteSettings['banner_text'] ?? '') }}
+    </div>
+    @endif
 
     <!-- Top Bar -->
     <div class="top-bar">
@@ -34,7 +75,13 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
 
-            <a href="{{ url('/') }}" class="logo">RUMUS</a>
+            <a href="{{ url('/') }}" class="logo">
+                @if(!empty($siteSettings['site_logo']))
+                    <img src="{{ asset($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'RUMUS' }}" style="max-height: 32px; object-fit: contain;">
+                @else
+                    {{ $siteSettings['site_name'] ?? 'RUMUS' }}
+                @endif
+            </a>
             
             <nav class="nav-links">
                 <a href="{{ route('product.catalog', ['categoria' => 'sublimacao']) }}" class="nav-link">Camisa Sublimação</a>
@@ -69,9 +116,9 @@
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <span class="hero-subtitle">Camisas Personalizadas e Ecobags</span>
-                <h1 class="hero-title">Transformamos sua ideia em realidade.</h1>
-                <p class="hero-description">Camisas personalizadas, ecobags e produção para empresas, eventos, atléticas e marcas.</p>
+                <span class="hero-subtitle">{{ $siteSettings['site_tagline'] ?? 'Camisas Personalizadas e Ecobags' }}</span>
+                <h1 class="hero-title">{{ $siteSettings['hero_title'] ?? 'Transformamos sua ideia em realidade.' }}</h1>
+                <p class="hero-description">{{ $siteSettings['hero_subtitle'] ?? 'Camisas personalizadas, ecobags e produção para empresas, eventos, atléticas e marcas.' }}</p>
                 <div class="hero-buttons">
                     <a href="{{ $instagramUrl }}" target="_blank" class="btn-primary">
                         Fazer Orçamento
@@ -81,7 +128,13 @@
                 </div>
             </div>
             <div class="hero-image-container">
-                <img src="{{ asset('images/rumus_hero_model.png') }}" alt="Modelo vestindo camisa preta premium RUMUS">
+                @if(isset($landingImages) && $landingImages->where('section', 'banner')->isNotEmpty())
+                    @foreach($landingImages->where('section', 'banner')->values() as $index => $img)
+                        <img src="{{ $img->url }}" alt="{{ $img->title }}" class="{{ $index === 0 ? 'active' : '' }}">
+                    @endforeach
+                @else
+                    <img src="{{ asset('images/rumus_hero_model.png') }}" alt="Modelo vestindo camisa preta premium RUMUS" class="active">
+                @endif
             </div>
         </div>
     </section>
@@ -95,7 +148,7 @@
             <div class="categories-grid">
                 <!-- Sublimacao -->
                 <a href="{{ route('product.show', 'camisa-sublimacao-full-print-exclusiva') }}" class="category-card" id="sublimacao">
-                    <img src="{{ asset('images/sublimacao_mockup.png') }}" class="category-img" alt="Camisa Sublimação">
+                    <img src="{{ isset($landingImages['category_sublimacao']) ? $landingImages['category_sublimacao']->url : asset('images/sublimacao_mockup.png') }}" class="category-img" alt="Camisa Sublimação">
                     <div class="category-overlay">
                         <h3 class="category-title">Camisa<br>Sublimação</h3>
                         <div class="category-btn" aria-label="Acessar">
@@ -105,7 +158,7 @@
                 </a>
                 <!-- Serigrafia -->
                 <a href="{{ route('product.show', 'camisa-serigrafia-tradicional') }}" class="category-card" id="serigrafia">
-                    <img src="{{ asset('images/serigrafia_mockup.png') }}" class="category-img" alt="Camisa Serigrafia">
+                    <img src="{{ isset($landingImages['category_serigrafia']) ? $landingImages['category_serigrafia']->url : asset('images/serigrafia_mockup.png') }}" class="category-img" alt="Camisa Serigrafia">
                     <div class="category-overlay">
                         <h3 class="category-title">Camisa<br>Serigrafia</h3>
                         <div class="category-btn" aria-label="Acessar">
@@ -115,7 +168,7 @@
                 </a>
                 <!-- DTF -->
                 <a href="{{ route('product.show', 'camisa-dtf-estampa-frontal') }}" class="category-card" id="dtf">
-                    <img src="{{ asset('images/dtf_mockup.png') }}" class="category-img" alt="Camisa DTF">
+                    <img src="{{ isset($landingImages['category_dtf']) ? $landingImages['category_dtf']->url : asset('images/dtf_mockup.png') }}" class="category-img" alt="Camisa DTF">
                     <div class="category-overlay">
                         <h3 class="category-title">Camisa<br>DTF</h3>
                         <div class="category-btn" aria-label="Acessar">
@@ -125,7 +178,7 @@
                 </a>
                 <!-- Ecobag -->
                 <a href="{{ route('product.show', 'camisa-sublimacao-full-print-exclusiva') }}" class="category-card" id="ecobags">
-                    <img src="{{ asset('images/ecobag_mockup.png') }}" class="category-img" alt="Ecobag">
+                    <img src="{{ isset($landingImages['category_ecobag']) ? $landingImages['category_ecobag']->url : asset('images/ecobag_mockup.png') }}" class="category-img" alt="Ecobag">
                     <div class="category-overlay">
                         <h3 class="category-title">Ecobag</h3>
                         <div class="category-btn" aria-label="Acessar">
@@ -212,7 +265,7 @@
                     <!-- Product 1 -->
                     <div class="product-card">
                         <div class="product-img-wrapper">
-                            <img src="{{ asset('images/camisas_empresariais.png') }}" class="product-img" alt="Camisas Empresariais">
+                            <img src="{{ isset($landingImages['highlight_empresariais']) ? $landingImages['highlight_empresariais']->url : asset('images/camisas_empresariais.png') }}" class="product-img" alt="Camisas Empresariais">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title">Camisas Empresariais</h3>
@@ -222,7 +275,7 @@
                     <!-- Product 2 -->
                     <div class="product-card">
                         <div class="product-img-wrapper">
-                            <img src="{{ asset('images/uniformes.png') }}" class="product-img" alt="Uniformes">
+                            <img src="{{ isset($landingImages['highlight_uniformes']) ? $landingImages['highlight_uniformes']->url : asset('images/uniformes.png') }}" class="product-img" alt="Uniformes">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title">Uniformes</h3>
@@ -232,7 +285,7 @@
                     <!-- Product 3 -->
                     <div class="product-card">
                         <div class="product-img-wrapper">
-                            <img src="{{ asset('images/interclasse.png') }}" class="product-img" alt="Interclasse">
+                            <img src="{{ isset($landingImages['highlight_interclasse']) ? $landingImages['highlight_interclasse']->url : asset('images/interclasse.png') }}" class="product-img" alt="Interclasse">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title">Interclasse</h3>
@@ -242,7 +295,7 @@
                     <!-- Product 4 -->
                     <div class="product-card">
                         <div class="product-img-wrapper">
-                            <img src="{{ asset('images/abadas.png') }}" class="product-img" alt="Abadás">
+                            <img src="{{ isset($landingImages['highlight_abadas']) ? $landingImages['highlight_abadas']->url : asset('images/abadas.png') }}" class="product-img" alt="Abadás">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title">Abadás</h3>
@@ -252,7 +305,7 @@
                     <!-- Product 5 -->
                     <div class="product-card">
                         <div class="product-img-wrapper">
-                            <img src="{{ asset('images/ecobag_mockup.png') }}" class="product-img" alt="Ecobags">
+                            <img src="{{ isset($landingImages['category_ecobag']) ? $landingImages['category_ecobag']->url : asset('images/ecobag_mockup.png') }}" class="product-img" alt="Ecobags">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title">Ecobags</h3>
@@ -262,7 +315,7 @@
                     <!-- Product 6 -->
                     <div class="product-card">
                         <div class="product-img-wrapper">
-                            <img src="{{ asset('images/camisas_exclusivas.png') }}" class="product-img" alt="Camisas Exclusivas">
+                            <img src="{{ isset($landingImages['highlight_exclusivas']) ? $landingImages['highlight_exclusivas']->url : asset('images/camisas_exclusivas.png') }}" class="product-img" alt="Camisas Exclusivas">
                         </div>
                         <div class="product-info">
                             <h3 class="product-title">Camisas Exclusivas</h3>
@@ -328,30 +381,38 @@
             </div>
             
             <div class="works-grid">
-                <div class="work-item">
-                    <img src="{{ asset('images/dtf_mockup.png') }}" class="work-img" alt="Camisa DTF Rumus">
-                </div>
-                <div class="work-item">
-                    <img src="{{ asset('images/serigrafia_mockup.png') }}" class="work-img" alt="Camisa Serigrafia Rumus">
-                </div>
-                <div class="work-item">
-                    <img src="{{ asset('images/sublimacao_mockup.png') }}" class="work-img" alt="Camisa Sublimação Rumus">
-                </div>
-                <div class="work-item">
-                    <img src="{{ asset('images/camisas_exclusivas.png') }}" class="work-img" alt="Camisas Exclusivas Rumus">
-                </div>
-                <div class="work-item">
-                    <img src="{{ asset('images/uniformes.png') }}" class="work-img" alt="Uniformes Rumus">
-                </div>
-                <div class="work-item">
-                    <img src="{{ asset('images/ecobag_mockup.png') }}" class="work-img" alt="Ecobag Rumus">
-                </div>
-                <div class="work-item">
-                    <img src="{{ asset('images/interclasse.png') }}" class="work-img" alt="Interclasse Rumus">
-                </div>
-                <div class="work-item">
-                    <img src="{{ asset('images/abadas.png') }}" class="work-img" alt="Abadás Rumus">
-                </div>
+                @if(isset($landingImages))
+                    @foreach($landingImages->where('section', 'portfolio') as $img)
+                        <div class="work-item">
+                            <img src="{{ $img->url }}" class="work-img" alt="{{ $img->title }}">
+                        </div>
+                    @endforeach
+                @else
+                    <div class="work-item">
+                        <img src="{{ asset('images/dtf_mockup.png') }}" class="work-img" alt="Camisa DTF Rumus">
+                    </div>
+                    <div class="work-item">
+                        <img src="{{ asset('images/serigrafia_mockup.png') }}" class="work-img" alt="Camisa Serigrafia Rumus">
+                    </div>
+                    <div class="work-item">
+                        <img src="{{ asset('images/sublimacao_mockup.png') }}" class="work-img" alt="Camisa Sublimação Rumus">
+                    </div>
+                    <div class="work-item">
+                        <img src="{{ asset('images/camisas_exclusivas.png') }}" class="work-img" alt="Camisas Exclusivas Rumus">
+                    </div>
+                    <div class="work-item">
+                        <img src="{{ asset('images/uniformes.png') }}" class="work-img" alt="Uniformes Rumus">
+                    </div>
+                    <div class="work-item">
+                        <img src="{{ asset('images/ecobag_mockup.png') }}" class="work-img" alt="Ecobag Rumus">
+                    </div>
+                    <div class="work-item">
+                        <img src="{{ asset('images/interclasse.png') }}" class="work-img" alt="Interclasse Rumus">
+                    </div>
+                    <div class="work-item">
+                        <img src="{{ asset('images/abadas.png') }}" class="work-img" alt="Abadás Rumus">
+                    </div>
+                @endif
             </div>
 
             <div class="works-action">
@@ -668,6 +729,17 @@
 
                 cartClose.addEventListener('click', closeCart);
                 cartOverlay.addEventListener('click', closeCart);
+            }
+
+            // Hero Banner Carousel
+            const bannerImages = document.querySelectorAll('.hero-image-container img');
+            if (bannerImages.length > 1) {
+                let currentIndex = 0;
+                setInterval(() => {
+                    bannerImages[currentIndex].classList.remove('active');
+                    currentIndex = (currentIndex + 1) % bannerImages.length;
+                    bannerImages[currentIndex].classList.add('active');
+                }, 4000);
             }
         });
     </script>

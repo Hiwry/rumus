@@ -4,9 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $product->name }} - RUMUS</title>
+    <link rel="icon" type="{{ Str::endsWith($siteSettings['site_favicon'] ?? '', '.ico') ? 'image/x-icon' : 'image/png' }}" href="{{ asset($siteSettings['site_favicon'] ?? 'favicon.ico') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @if(isset($siteSettings))
+    <style>
+        :root {
+            @if(!empty($siteSettings['primary_color']))
+                --primary: {{ $siteSettings['primary_color'] }};
+                --primary-hover: {{ $siteSettings['primary_color'] }}cc;
+            @endif
+            @if(!empty($siteSettings['accent_color']))
+                --accent: {{ $siteSettings['accent_color'] }};
+            @endif
+        }
+    </style>
+    @endif
 </head>
 <body>
+    @if(isset($siteSettings) && ($siteSettings['show_banner'] ?? '0') == '1')
+    <div class="promo-banner" style="background: var(--primary, #000); color: #fff; text-align: center; padding: 8px 12px; font-size: 11px; font-family: var(--font-title); font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">
+        {{ str_replace('🚀', '', $siteSettings['banner_text'] ?? '') }}
+    </div>
+    @endif
 
     <!-- Top Bar -->
     <div class="top-bar">
@@ -34,7 +53,13 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
 
-            <a href="{{ url('/') }}" class="logo">RUMUS</a>
+            <a href="{{ url('/') }}" class="logo">
+                @if(!empty($siteSettings['site_logo']))
+                    <img src="{{ asset($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'RUMUS' }}" style="max-height: 32px; object-fit: contain;">
+                @else
+                    {{ $siteSettings['site_name'] ?? 'RUMUS' }}
+                @endif
+            </a>
             
             <nav class="nav-links">
                 <a href="{{ route('product.catalog', ['categoria' => 'sublimacao']) }}" class="nav-link">Camisa Sublimação</a>
@@ -472,7 +497,7 @@
                             <span>Total:</span>
                             <strong>R$ ${total.toFixed(2).replace('.', ',')}</strong>
                         </div>
-                        <a href="https://wa.me/5582999999999?text=${encodeURIComponent(whatsappMsg)}" target="_blank" class="btn-action-primary" style="margin-top: 1rem; width: 100%; text-align: center; display: block; text-decoration: none;">
+                        <a href="{{ $siteSettings['whatsapp_url'] ?? 'https://wa.me/5582999999999' }}?text=${encodeURIComponent(whatsappMsg)}" target="_blank" class="btn-action-primary" style="margin-top: 1rem; width: 100%; text-align: center; display: block; text-decoration: none;">
                             FINALIZAR PEDIDO NO WHATSAPP
                         </a>
                     `;

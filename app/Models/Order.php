@@ -33,6 +33,18 @@ class Order extends Model
 
     public function getStatusLabelAttribute(): string
     {
+        try {
+            $statusesString = \App\Models\SiteSetting::get('order_statuses');
+            if (!empty($statusesString)) {
+                foreach (explode(',', $statusesString) as $item) {
+                    $parts = explode(':', $item, 2);
+                    if (count($parts) === 2 && trim($parts[0]) === $this->status) {
+                        return trim($parts[1]);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {}
+
         return match($this->status) {
             'pending'       => 'Aguardando',
             'confirmed'     => 'Confirmado',

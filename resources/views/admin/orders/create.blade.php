@@ -84,12 +84,15 @@
         </div>
 
         <div class="card">
-            <div class="card-header"><span style="font-size:16px;">📌</span><span class="card-title">Status & Observações</span></div>
+            <div class="card-header" style="display:flex; align-items:center; gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span class="card-title">Status & Observações</span>
+            </div>
             <div class="card-body">
                 <div class="form-group">
                     <label class="form-label">Status *</label>
                     <select name="status" class="form-control" required>
-                        @foreach(['pending'=>'Aguardando','confirmed'=>'Confirmado','in_production'=>'Em Produção','shipped'=>'Enviado','delivered'=>'Entregue','cancelled'=>'Cancelado'] as $v => $l)
+                        @foreach($statuses as $v => $l)
                             <option value="{{ $v }}" {{ old('status', 'pending') === $v ? 'selected' : '' }}>{{ $l }}</option>
                         @endforeach
                     </select>
@@ -103,7 +106,10 @@
 
         <div style="display:flex; gap:12px; justify-content:flex-end;">
             <a href="{{ route('admin.orders.index') }}" class="btn btn-ghost">Cancelar</a>
-            <button type="submit" class="btn btn-primary" style="padding:12px 28px; font-size:15px;">💾 Criar Pedido</button>
+            <button type="submit" class="btn btn-primary" style="padding:12px 28px; font-size:15px; display:inline-flex; align-items:center; gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Criar Pedido
+            </button>
         </div>
     </div>
 </form>

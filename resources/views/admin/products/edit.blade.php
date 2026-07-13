@@ -41,8 +41,8 @@
                         <div class="form-group">
                             <label class="form-label">Categoria *</label>
                             <select name="category" class="form-control" required>
-                                @foreach(['sublimacao'=>'Sublimação','serigrafia'=>'Serigrafia','dtf'=>'DTF','ecobag'=>'Ecobag'] as $val => $lbl)
-                                    <option value="{{ $val }}" {{ old('category', $product->category) === $val ? 'selected' : '' }}>{{ $lbl }}</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat }}" {{ old('category', $product->category) === $cat ? 'selected' : '' }}>{{ ucfirst($cat) }}</option>
                                 @endforeach
                             </select>
                         </div>

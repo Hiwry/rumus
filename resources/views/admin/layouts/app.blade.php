@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') — RUMUS Admin</title>
+    <link rel="icon" type="{{ Str::endsWith($siteSettings['site_favicon'] ?? '', '.ico') ? 'image/x-icon' : 'image/png' }}" href="{{ asset($siteSettings['site_favicon'] ?? 'favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -593,21 +594,185 @@
         }
 
         /* ── Responsive ─────────────────────────────────────────────────── */
+        .sidebar {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 150;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .mobile-sidebar-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-right: 0.5rem;
+        }
+
         @media (max-width: 1024px) {
             .grid-4 { grid-template-columns: repeat(2, 1fr); }
             .grid-3 { grid-template-columns: repeat(2, 1fr); }
         }
 
+        /* Bottom Navigation Bar */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: var(--bg-white);
+            border-top: 1px solid var(--border);
+            z-index: 180;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            padding: 0.25rem 0;
+            font-family: var(--font-title);
+            font-size: 0.65rem;
+            font-weight: 600;
+            gap: 0.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .bottom-nav-item:hover,
+        .bottom-nav-item.active {
+            color: #000;
+        }
+
+        .bottom-nav-item svg {
+            transition: var(--transition);
+        }
+        
+        .bottom-nav-item.active svg {
+            stroke: #000;
+            fill: rgba(0,0,0,0.05);
+        }
+
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
-            .main { margin-left: 0; }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; padding-bottom: 60px; }
             .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-            .page-content { padding: 1.25rem; }
+            .page-content { padding: 1rem 0.75rem; }
+            .mobile-sidebar-toggle { display: flex; }
+            .page-header { display: flex; padding: 0 1rem; gap: 0.5rem; justify-content: space-between; }
+            .page-header-title { font-size: 0.8rem; }
+            .page-header-actions { gap: 0.5rem; }
+            .page-header-actions .btn { padding: 0.4rem 0.65rem; font-size: 0.62rem; }
+            .main-topbar { padding: 0.5rem 1rem; font-size: 0.6rem; gap: 0.8rem; justify-content: center; }
+            .main-topbar-item { display: none; }
+            .main-topbar-item.highlight { display: flex; }
+            .mobile-bottom-nav { display: flex; }
+
+            /* ── Search Bar Mobile ────────────────────────────────────────── */
+            .search-bar {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+                width: 100% !important;
+            }
+            .search-bar select.form-control,
+            .search-bar .btn,
+            .search-bar .search-wrap {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+            .search-bar .btn {
+                justify-content: center;
+                padding: 0.65rem 1rem;
+            }
+
+            /* ── Responsive Table to Cards ────────────────────────────────── */
+            .responsive-table table, 
+            .responsive-table thead, 
+            .responsive-table tbody, 
+            .responsive-table th, 
+            .responsive-table td, 
+            .responsive-table tr { 
+                display: block; 
+            }
+            .responsive-table thead {
+                display: none;
+            }
+            .responsive-table tr {
+                background: var(--bg-white);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                margin-bottom: 12px;
+                padding: 12px;
+                box-shadow: var(--shadow-sm);
+            }
+            .responsive-table td {
+                border: none;
+                padding: 8px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 13px;
+                border-bottom: 1px dashed var(--border);
+                min-height: 38px;
+            }
+            .responsive-table td:last-child {
+                border-bottom: none;
+                padding-top: 10px;
+                justify-content: flex-end;
+            }
+            .responsive-table td::before {
+                content: attr(data-label);
+                font-family: var(--font-title);
+                font-weight: 700;
+                font-size: 11px;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                letter-spacing: 0.5px;
+            }
+            .responsive-table td.full-width {
+                display: block;
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 8px;
+                margin-bottom: 8px;
+            }
+            .responsive-table td.full-width::before {
+                display: none;
+            }
         }
     </style>
     @stack('styles')
 </head>
 <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- ══ Sidebar ══════════════════════════════════════════════════════════ -->
     <aside class="sidebar">
@@ -617,7 +782,13 @@
 
         <!-- Logo row — same style as site's navbar -->
         <div class="sidebar-logo">
-            <a href="/" class="sidebar-logo-name">RUMUS</a>
+            <a href="/" class="sidebar-logo-name">
+                @if(!empty($siteSettings['site_logo']))
+                    <img src="{{ asset($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'RUMUS' }}" style="max-height: 28px; object-fit: contain;">
+                @else
+                    {{ $siteSettings['site_name'] ?? 'RUMUS' }}
+                @endif
+            </a>
             <span class="sidebar-logo-tag">Admin</span>
         </div>
 
@@ -657,6 +828,18 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
                     </span>
                     Configurações do Site
+                </a>
+                <a href="{{ route('admin.categories.index') }}" class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <span class="nav-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    </span>
+                    Categorias & Status
+                </a>
+                <a href="{{ route('admin.images.index') }}" class="nav-link {{ request()->routeIs('admin.images.*') ? 'active' : '' }}">
+                    <span class="nav-icon">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    </span>
+                    Imagens do Site
                 </a>
                 <a href="{{ url('/') }}" target="_blank" class="nav-link">
                     <span class="nav-icon">
@@ -703,6 +886,9 @@
 
         <!-- Page header — same as site's navbar -->
         <header class="page-header">
+            <button type="button" class="mobile-sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
             <div class="page-header-title">
                 <span class="breadcrumb-parent">Admin</span>
                 <span class="breadcrumb-sep">/</span>
@@ -733,6 +919,65 @@
 
     </div>
 
+    <!-- ══ Mobile Bottom Navigation ═════════════════════════════════════════ -->
+    <nav class="mobile-bottom-nav">
+        <a href="{{ route('admin.dashboard') }}" class="bottom-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>Painel</span>
+        </a>
+        <a href="{{ route('admin.products.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <span>Produtos</span>
+        </a>
+        <a href="{{ route('admin.orders.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Pedidos</span>
+        </a>
+        <a href="{{ route('admin.settings.index') }}" class="bottom-nav-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
+            <span>Ajustes</span>
+        </a>
+        <button type="button" class="bottom-nav-item" id="bottomNavMenu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <span>Mais</span>
+        </button>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const bottomNavMenu = document.getElementById('bottomNavMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            const openSidebar = function() {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+            };
+
+            const closeSidebar = function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            };
+
+            if (toggleBtn && sidebar && overlay) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (bottomNavMenu) {
+                bottomNavMenu.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+                });
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', closeSidebar);
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

@@ -26,18 +26,23 @@ class OrderController extends Controller
         }
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(20);
+        $statuses = $this->getStatuses();
 
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.orders.index', compact('orders', 'statuses'));
     }
 
     public function create()
     {
         $products = Product::active()->orderBy('name')->get();
-        return view('admin.orders.create', compact('products'));
+        $statuses = $this->getStatuses();
+        return view('admin.orders.create', compact('products', 'statuses'));
     }
 
     public function store(Request $request)
     {
+        $statuses = $this->getStatuses();
+        $allowedStatusesCsv = implode(',', array_keys($statuses));
+
         $validated = $request->validate([
             'product_id'    => 'nullable|exists:products,id',
             'product_name'  => 'required|string|max:255',
@@ -48,7 +53,7 @@ class OrderController extends Controller
             'color'         => 'nullable|string|max:30',
             'quantity'      => 'required|integer|min:1',
             'unit_price'    => 'required|numeric|min:0',
-            'status'        => 'required|in:pending,confirmed,in_production,shipped,delivered,cancelled',
+            'status'        => 'required|in:' . $allowedStatusesCsv,
             'notes'         => 'nullable|string',
         ]);
 
@@ -64,14 +69,33 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('product');
-        return view('admin.orders.show', compact('order'));
+        $statuses = $this->getStatuses();
+        return view('admin.orders.show', compact('order', 'statuses'));
     }
 
     public function updateStatus(Request $request, Order $order)
     {
-        $request->validate(['status' => 'required|in:pending,confirmed,in_production,shipped,delivered,cancelled']);
+        $statuses = $this->getStatuses();
+        $allowedStatusesCsv = implode(',', array_keys($statuses));
+
+        $request->validate(['status' => 'required|in:' . $allowedStatusesCsv]);
         $order->update(['status' => $request->status]);
         return back()->with('success', 'Status do pedido atualizado!');
+    }
+
+    private function getStatuses(): array
+    {
+        $statusesString = \App\Models\SiteSetting::get('order_statuses', 'pending:Aguardando,confirmed:Confirmado,in_production:Em Produção,shipped:Enviado,delivered:Entregue,cancelled:Cancelado');
+        $statuses = [];
+        if (!empty($statusesString)) {
+            foreach (explode(',', $statusesString) as $item) {
+                $parts = explode(':', $item, 2);
+                if (count($parts) === 2) {
+                    $statuses[trim($parts[0])] = trim($parts[1]);
+                }
+            }
+        }
+        return $statuses;
     }
 
     public function destroy(Order $order)

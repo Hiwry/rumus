@@ -67,8 +67,11 @@ class DashboardController extends Controller
         $tempTrend     = $viewsPrev24h > 0 ? round((($viewsLast24h - $viewsPrev24h) / $viewsPrev24h) * 100) : 0;
 
         // ── Hourly views today ──────────────────────────────────────────────
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+        $hourExpr = $isSqlite ? "strftime('%H', created_at)" : "HOUR(created_at)";
+
         $hourlyViews = PageView::select(
-                            DB::raw('HOUR(created_at) as hour'),
+                            DB::raw("CAST($hourExpr AS INTEGER) as hour"),
                             DB::raw('COUNT(*) as count')
                         )
                         ->whereDate('created_at', today())
