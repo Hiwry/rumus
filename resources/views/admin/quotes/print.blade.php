@@ -327,7 +327,10 @@
 
     {{-- Printable Action Bar --}}
     <div class="print-actions">
-        <a href="javascript:history.back()" class="btn-back">← Voltar</a>
+        <a href="javascript:history.back()" class="btn-back" style="display:inline-flex; align-items:center; gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Voltar
+        </a>
         <div style="font-weight:bold; color:#000000; font-size:15px;">Orçamento Gerado com Sucesso!</div>
         <div style="display:flex; gap:10px;">
             <button type="button" id="downloadPdfBtn" class="btn-download">

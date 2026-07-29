@@ -278,7 +278,10 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path></svg>
                     <span class="card-title">4. Alterar Nº Orçamento, Validade, Assinatura e Imagens (Opcional)</span>
                 </div>
-                <span style="font-size:12px; color:var(--text-muted); font-weight:700;">Toque para expandir ▼</span>
+                <span style="font-size:12px; color:var(--text-muted); font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                    Toque para expandir
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </span>
             </summary>
             <div class="card-body" style="border-top:1px solid var(--border);">
                 <div class="grid grid-3">
