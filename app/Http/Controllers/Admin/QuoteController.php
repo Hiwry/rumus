@@ -6,15 +6,32 @@ use App\Http\Controllers\Controller;
 use App\Models\Quote;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 use Carbon\Carbon;
 
 class QuoteController extends Controller
 {
     /**
+     * Auto-migrate quotes table if missing on production server.
+     */
+    private function ensureTableExists(): void
+    {
+        if (!Schema::hasTable('quotes')) {
+            try {
+                Artisan::call('migrate', ['--force' => true]);
+            } catch (\Throwable $e) {
+                // Ignore if already created or permission denied
+            }
+        }
+    }
+
+    /**
      * Display budget dashboard manager with metrics & filterable list.
      */
     public function index(Request $request)
     {
+        $this->ensureTableExists();
         $query = Quote::query();
 
         // Search filter
@@ -117,6 +134,7 @@ class QuoteController extends Controller
      */
     public function store(Request $request)
     {
+        $this->ensureTableExists();
         $data = $request->validate([
             'quote_number'    => 'required|string',
             'quote_date'      => 'nullable|string',

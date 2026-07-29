@@ -38,6 +38,20 @@ class Quote extends Model
     ];
 
     /**
+     * Get formatted date (d/m/Y) safely
+     */
+    public function getFormattedDateAttribute(): string
+    {
+        if (empty($this->quote_date)) {
+            return $this->created_at ? $this->created_at->format('d/m/Y') : date('d/m/Y');
+        }
+        if ($this->quote_date instanceof \DateTimeInterface) {
+            return $this->quote_date->format('d/m/Y');
+        }
+        return date('d/m/Y', strtotime($this->quote_date));
+    }
+
+    /**
      * Get formatted total amount in R$
      */
     public function getFormattedTotalAttribute(): string

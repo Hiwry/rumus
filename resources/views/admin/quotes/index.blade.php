@@ -181,7 +181,7 @@
                                     #{{ $quote->quote_number }}
                                 </td>
                                 <td style="font-size:13px; color:var(--text-muted);">
-                                    {{ $quote->quote_date ? $quote->quote_date->format('d/m/Y') : $quote->created_at->format('d/m/Y') }}
+                                    {{ $quote->formatted_date }}
                                 </td>
                                 <td>
                                     <div style="font-weight:700; color:#111;">{{ $quote->client_name ?: 'Cliente não identificado' }}</div>
