@@ -4,36 +4,26 @@
 
 @section('content')
 <style>
-    /* Mobile-First Custom Styles for Budget Generator */
     .quote-container {
         display: flex;
         flex-direction: column;
         gap: 20px;
         max-width: 1100px;
         margin: 0 auto;
-        padding-bottom: 90px; /* Space for mobile sticky bottom bar */
+        padding-bottom: 90px;
     }
 
-    /* Prevent iOS auto-zoom on input focus */
     .quote-container input,
     .quote-container select,
     .quote-container textarea {
         font-size: 16px !important;
     }
 
-    /* Desktop / Mobile view toggles */
-    .desktop-table-wrap {
-        display: block;
-    }
-    .mobile-items-wrap {
-        display: none;
-    }
-
-    /* Mobile Sticky Bottom Action Bar */
+    /* Mobile Sticky Bottom Bar */
     .mobile-sticky-bar {
         display: none;
         position: fixed;
-        bottom: 60px; /* Above bottom nav */
+        bottom: 60px;
         left: 0;
         right: 0;
         background: #111111;
@@ -44,11 +34,6 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-    }
-
-    .mobile-sticky-total {
-        display: flex;
-        flex-direction: column;
     }
 
     .mobile-sticky-total .label {
@@ -79,59 +64,76 @@
         cursor: pointer;
     }
 
-    /* Mobile Item Card */
-    .mobile-item-card {
-        background: #ffffff;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 14px;
-        margin-bottom: 12px;
-        position: relative;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .mobile-item-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .mobile-item-num {
-        font-weight: 800;
-        font-size: 13px;
-        color: var(--text-main);
-        text-transform: uppercase;
-    }
-
-    .mobile-item-subtotal {
-        font-size: 13px;
-        font-weight: 700;
-        color: #059669;
-        background: #ecfdf5;
-        padding: 2px 8px;
-        border-radius: 4px;
-    }
-
-    /* Responsive Breakpoints */
+    /* Responsive Table Styles for Items */
     @media (max-width: 768px) {
-        .desktop-table-wrap {
-            display: none;
-        }
-        .mobile-items-wrap {
-            display: block;
-        }
         .mobile-sticky-bar {
             display: flex;
-        }
-        .quote-container {
-            gap: 16px;
         }
         .desktop-action-bar {
             display: none !important;
         }
+        .quote-container {
+            gap: 16px;
+        }
+
+        /* Convert Table into Cards on Mobile */
+        .responsive-items-table, 
+        .responsive-items-table tbody {
+            display: block;
+            width: 100%;
+        }
+        .responsive-items-table thead {
+            display: none;
+        }
+        .responsive-items-table tr.item-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .responsive-items-table td {
+            border: none !important;
+            padding: 0 !important;
+            display: flex;
+            flex-direction: column;
+        }
+        .responsive-items-table td.td-desc {
+            grid-column: 1 / -1;
+        }
+        .responsive-items-table td.td-qty {
+            grid-column: 1;
+        }
+        .responsive-items-table td.td-price {
+            grid-column: 2;
+        }
+        .responsive-items-table td.td-total {
+            grid-column: 1;
+            justify-content: center;
+            font-weight: 800;
+            color: #059669;
+        }
+        .responsive-items-table td.td-action {
+            grid-column: 2;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .mobile-cell-label {
+            display: block !important;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+    }
+
+    .mobile-cell-label {
+        display: none;
     }
 </style>
 
@@ -191,98 +193,53 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                     <span class="card-title">2. Itens do Orçamento</span>
                 </div>
-                <button type="button" class="btn btn-secondary addItemBtn" style="padding:8px 14px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
+                <button type="button" class="btn btn-secondary" id="addItemBtn" style="padding:8px 16px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    + Item
+                    + Adicionar Item
                 </button>
             </div>
             
-            {{-- DESKTOP TABLE VIEW --}}
-            <div class="card-body desktop-table-wrap" style="padding:0;">
-                <div class="table-responsive">
-                    <table class="table" id="itemsTable" style="margin:0;">
-                        <thead>
-                            <tr style="background:#f8f9fa;">
-                                <th style="width:110px; text-align:center;">QUANT.</th>
-                                <th>DESCRIÇÃO DO PRODUTO / SERVIÇO</th>
-                                <th style="width:150px; text-align:right;">PÇ UNIT. (R$)</th>
-                                <th style="width:160px; text-align:right;">PÇ TOTAL (R$)</th>
-                                <th style="width:50px; text-align:center;"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="desktopTableBody">
-                            <tr class="item-row-desktop">
-                                <td>
-                                    <input type="number" step="any" min="0" inputmode="decimal" name="items[0][quantity]" class="form-control item-qty text-center" value="1" placeholder="1">
-                                </td>
-                                <td>
-                                    <input type="text" name="items[0][description]" class="form-control item-desc" placeholder="Ex: BASICA PP SUB-TOTAL COM GOLA PADRE + PUNHO" value="BASICA PP SUB-TOTAL COM GOLA PADRE + PUNHO">
-                                </td>
-                                <td>
-                                    <input type="text" inputmode="decimal" name="items[0][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="45,00">
-                                </td>
-                                <td style="text-align:right; font-weight:700; vertical-align:middle;">
-                                    <span class="item-total-display">R$ 45,00</span>
-                                </td>
-                                <td style="text-align:center; vertical-align:middle;">
-                                    <button type="button" class="btn-remove-row" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:18px; padding:4px;" title="Remover item">✕</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr style="background:#fafafa; border-top:2px solid var(--border);">
-                                <td colspan="3" style="text-align:right; font-weight:800; font-size:15px; text-transform:uppercase; padding:16px;">TOTAL GERAL:</td>
-                                <td style="text-align:right; font-weight:900; font-size:18px; color:var(--primary); padding:16px;">
-                                    <span class="grandTotalDisplay">R$ 45,00</span>
-                                </td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
+            <div class="card-body" style="padding:16px;">
+                <table class="table responsive-items-table" id="itemsTable" style="margin:0;">
+                    <thead>
+                        <tr style="background:#f8f9fa;">
+                            <th style="width:110px; text-align:center;">QUANT.</th>
+                            <th>DESCRIÇÃO DO PRODUTO / SERVIÇO</th>
+                            <th style="width:150px; text-align:right;">PÇ UNIT. (R$)</th>
+                            <th style="width:160px; text-align:right;">PÇ TOTAL (R$)</th>
+                            <th style="width:50px; text-align:center;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody">
+                        <tr class="item-row">
+                            <td class="td-qty">
+                                <span class="mobile-cell-label">Quantidade</span>
+                                <input type="number" step="any" min="0" inputmode="decimal" name="items[0][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" required>
+                            </td>
+                            <td class="td-desc">
+                                <span class="mobile-cell-label">Descrição do Produto/Serviço</span>
+                                <input type="text" name="items[0][description]" class="form-control item-desc" placeholder="Ex: BASICA PP SUB-TOTAL COM GOLA PADRE + PUNHO" value="BASICA PP SUB-TOTAL COM GOLA PADRE + PUNHO" required>
+                            </td>
+                            <td class="td-price">
+                                <span class="mobile-cell-label">Valor Unitário (R$)</span>
+                                <input type="text" inputmode="decimal" name="items[0][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="45,00" required>
+                            </td>
+                            <td class="td-total" style="text-align:right; font-weight:700; vertical-align:middle;">
+                                <span class="mobile-cell-label">Subtotal</span>
+                                <span class="item-total-display" style="font-size:15px; font-weight:800; color:#059669;">R$ 45,00</span>
+                            </td>
+                            <td class="td-action" style="text-align:center; vertical-align:middle;">
+                                <button type="button" class="btn-remove-row" style="background:#fee2e2; color:#dc2626; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; font-size:13px; cursor:pointer;" title="Remover item">✕ Excluir</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="background:#f8f9fa; border:1px solid var(--border); border-radius:8px; padding:16px; margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:800; font-size:15px; text-transform:uppercase;">TOTAL GERAL:</span>
+                    <span class="grandTotalDisplay" style="font-weight:900; font-size:22px; color:#000000;">R$ 45,00</span>
                 </div>
             </div>
-
-            {{-- MOBILE CARDS VIEW --}}
-            <div class="card-body mobile-items-wrap" style="padding:12px;">
-                <div id="mobileItemsContainer">
-                    <div class="mobile-item-card item-row-mobile">
-                        <div class="mobile-item-card-header">
-                            <span class="mobile-item-num">Item #1</span>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span class="mobile-item-subtotal item-total-display">R$ 45,00</span>
-                                <button type="button" class="btn-remove-row" style="background:#fee2e2; color:#dc2626; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; font-size:12px;">✕ Excluir</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom:10px;">
-                            <label class="form-label">Descrição do Produto/Serviço</label>
-                            <input type="text" name="items[0][description]" class="form-control item-desc" placeholder="Ex: BASICA PP SUB-TOTAL COM GOLA PADRE + PUNHO" value="BASICA PP SUB-TOTAL COM GOLA PADRE + PUNHO">
-                        </div>
-
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                            <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label">Quantidade</label>
-                                <input type="number" step="any" min="0" inputmode="decimal" name="items[0][quantity]" class="form-control item-qty text-center" value="1" placeholder="1">
-                            </div>
-                            <div class="form-group" style="margin-bottom:0;">
-                                <label class="form-label">Valor Unit. (R$)</label>
-                                <input type="text" inputmode="decimal" name="items[0][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="45,00">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="button" class="btn btn-secondary addItemBtn" style="width:100%; padding:12px; font-size:14px; font-weight:700; margin-top:8px; display:flex; justify-content:center; align-items:center; gap:6px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    Adicionar Outro Item
-                </button>
-
-                <div style="background:#f8f9fa; border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:16px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-weight:800; font-size:14px; text-transform:uppercase;">TOTAL GERAL:</span>
-                    <span class="grandTotalDisplay" style="font-weight:900; font-size:20px; color:#000000;">R$ 45,00</span>
-                </div>
-            </div>
-
         </div>
 
         {{-- Condições Comerciais --}}
@@ -314,7 +271,7 @@
             </div>
         </div>
 
-        {{-- Opções Avançadas / Empresa (Accordion sanfona fácil no celular) --}}
+        {{-- Opções Avançadas --}}
         <details class="card" style="cursor:pointer;">
             <summary class="card-header" style="display:flex; align-items:center; justify-content:space-between; user-select:none;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -409,10 +366,9 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    let itemIndex = 1;
-
-    const desktopTbody = document.getElementById('desktopTableBody');
-    const mobileContainer = document.getElementById('mobileItemsContainer');
+    let itemIndex = 0;
+    const tbody = document.getElementById('itemsTableBody');
+    const addItemBtn = document.getElementById('addItemBtn');
     const grandTotalDisplays = document.querySelectorAll('.grandTotalDisplay');
 
     function parseMoney(val) {
@@ -430,133 +386,82 @@ document.addEventListener('DOMContentLoaded', function () {
         return 'R$ ' + num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    function syncAndCalculate() {
+    function calculateTotals() {
         let total = 0;
+        const rows = tbody.querySelectorAll('.item-row');
 
-        // Check if screen is mobile
-        const isMobile = window.innerWidth <= 768;
+        rows.forEach(row => {
+            const qtyInput = row.querySelector('.item-qty');
+            const priceInput = row.querySelector('.item-price');
+            const totalDisplay = row.querySelector('.item-total-display');
 
-        if (isMobile) {
-            const mobileCards = mobileContainer.querySelectorAll('.item-row-mobile');
-            mobileCards.forEach((card, idx) => {
-                const qtyInput = card.querySelector('.item-qty');
-                const priceInput = card.querySelector('.item-price');
-                const totalDisplay = card.querySelector('.item-total-display');
+            const qty = parseFloat(qtyInput.value) || 0;
+            const price = parseMoney(priceInput.value);
+            const rowTotal = qty * price;
 
-                const qty = parseFloat(qtyInput.value) || 0;
-                const price = parseMoney(priceInput.value);
-                const rowTotal = qty * price;
-                total += rowTotal;
+            total += rowTotal;
 
+            if (totalDisplay) {
                 totalDisplay.textContent = rowTotal > 0 ? formatMoney(rowTotal) : 'R$ -';
-            });
-        } else {
-            const desktopRows = desktopTbody.querySelectorAll('.item-row-desktop');
-            desktopRows.forEach((row, idx) => {
-                const qtyInput = row.querySelector('.item-qty');
-                const priceInput = row.querySelector('.item-price');
-                const totalDisplay = row.querySelector('.item-total-display');
-
-                const qty = parseFloat(qtyInput.value) || 0;
-                const price = parseMoney(priceInput.value);
-                const rowTotal = qty * price;
-                total += rowTotal;
-
-                totalDisplay.textContent = rowTotal > 0 ? formatMoney(rowTotal) : 'R$ -';
-            });
-        }
+            }
+        });
 
         grandTotalDisplays.forEach(el => {
             el.textContent = formatMoney(total);
         });
     }
 
-    // Input listener for calculations
-    document.getElementById('quoteForm').addEventListener('input', function (e) {
+    // Input listeners
+    tbody.addEventListener('input', function (e) {
         if (e.target.classList.contains('item-qty') || e.target.classList.contains('item-price')) {
-            syncAndCalculate();
+            calculateTotals();
         }
     });
 
-    // Add item handler
-    document.querySelectorAll('.addItemBtn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            itemIndex++;
-
-            // Add Desktop Row
-            const tr = document.createElement('tr');
-            tr.className = 'item-row-desktop';
-            tr.innerHTML = `
-                <td>
-                    <input type="number" step="any" min="0" inputmode="decimal" name="items[${itemIndex}][quantity]" class="form-control item-qty text-center" value="1" placeholder="1">
-                </td>
-                <td>
-                    <input type="text" name="items[${itemIndex}][description]" class="form-control item-desc" placeholder="Descrição do produto ou serviço">
-                </td>
-                <td>
-                    <input type="text" inputmode="decimal" name="items[${itemIndex}][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="0,00">
-                </td>
-                <td style="text-align:right; font-weight:700; vertical-align:middle;">
-                    <span class="item-total-display">R$ -</span>
-                </td>
-                <td style="text-align:center; vertical-align:middle;">
-                    <button type="button" class="btn-remove-row" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:18px; padding:4px;" title="Remover item">✕</button>
-                </td>
-            `;
-            desktopTbody.appendChild(tr);
-
-            // Add Mobile Card
-            const card = document.createElement('div');
-            card.className = 'mobile-item-card item-row-mobile';
-            const count = mobileContainer.querySelectorAll('.item-row-mobile').length + 1;
-            card.innerHTML = `
-                <div class="mobile-item-card-header">
-                    <span class="mobile-item-num">Item #${count}</span>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="mobile-item-subtotal item-total-display">R$ -</span>
-                        <button type="button" class="btn-remove-row" style="background:#fee2e2; color:#dc2626; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; font-size:12px;">✕ Excluir</button>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-bottom:10px;">
-                    <label class="form-label">Descrição do Produto/Serviço</label>
-                    <input type="text" name="items[${itemIndex}][description]" class="form-control item-desc" placeholder="Descrição do produto ou serviço">
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">Quantidade</label>
-                        <input type="number" step="any" min="0" inputmode="decimal" name="items[${itemIndex}][quantity]" class="form-control item-qty text-center" value="1" placeholder="1">
-                    </div>
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">Valor Unit. (R$)</label>
-                        <input type="text" inputmode="decimal" name="items[${itemIndex}][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="0,00">
-                    </div>
-                </div>
-            `;
-            mobileContainer.appendChild(card);
-
-            syncAndCalculate();
-        });
-    });
-
-    // Remove item handler
-    document.addEventListener('click', function (e) {
+    // Remove row
+    tbody.addEventListener('click', function (e) {
         if (e.target.classList.contains('btn-remove-row')) {
-            const desktopRows = desktopTbody.querySelectorAll('.item-row-desktop');
-            const mobileCards = mobileContainer.querySelectorAll('.item-row-mobile');
-
-            if (desktopRows.length > 1 || mobileCards.length > 1) {
-                const targetRow = e.target.closest('.item-row-desktop, .item-row-mobile');
-                if (targetRow) {
-                    targetRow.remove();
-                    syncAndCalculate();
-                }
+            const rows = tbody.querySelectorAll('.item-row');
+            if (rows.length > 1) {
+                e.target.closest('tr').remove();
+                calculateTotals();
             } else {
-                alert('O orçamento precisa ter pelo menos 1 item.');
+                alert('O orçamento precisa ter pelo menos um item.');
             }
         }
     });
 
-    syncAndCalculate();
+    // Add row
+    addItemBtn.addEventListener('click', function () {
+        itemIndex++;
+        const tr = document.createElement('tr');
+        tr.className = 'item-row';
+        tr.innerHTML = `
+            <td class="td-qty">
+                <span class="mobile-cell-label">Quantidade</span>
+                <input type="number" step="any" min="0" inputmode="decimal" name="items[${itemIndex}][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" required>
+            </td>
+            <td class="td-desc">
+                <span class="mobile-cell-label">Descrição do Produto/Serviço</span>
+                <input type="text" name="items[${itemIndex}][description]" class="form-control item-desc" placeholder="Descrição do produto ou serviço" required>
+            </td>
+            <td class="td-price">
+                <span class="mobile-cell-label">Valor Unitário (R$)</span>
+                <input type="text" inputmode="decimal" name="items[${itemIndex}][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="0,00" required>
+            </td>
+            <td class="td-total" style="text-align:right; font-weight:700; vertical-align:middle;">
+                <span class="mobile-cell-label">Subtotal</span>
+                <span class="item-total-display" style="font-size:15px; font-weight:800; color:#059669;">R$ -</span>
+            </td>
+            <td class="td-action" style="text-align:center; vertical-align:middle;">
+                <button type="button" class="btn-remove-row" style="background:#fee2e2; color:#dc2626; border:none; border-radius:6px; padding:6px 12px; font-weight:bold; font-size:13px; cursor:pointer;" title="Remover item">✕ Excluir</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        calculateTotals();
+    });
+
+    calculateTotals();
 });
 </script>
 @endpush

@@ -166,7 +166,8 @@ class QuoteController extends Controller
         $grandTotal = 0;
         if (!empty($data['items'])) {
             foreach ($data['items'] as $item) {
-                $qty = (float) str_replace(',', '.', $item['quantity'] ?? 0);
+                $rawQty = trim($item['quantity'] ?? '1');
+                $qty = (float) str_replace(',', '.', $rawQty);
                 
                 $unitPriceStr = preg_replace('/[^\d.,]/', '', $item['unit_price'] ?? '0');
                 if (strpos($unitPriceStr, ',') !== false && strpos($unitPriceStr, '.') !== false) {
@@ -179,12 +180,15 @@ class QuoteController extends Controller
                 $totalPrice = $qty * $unitPrice;
                 $grandTotal += $totalPrice;
 
-                if (!empty($item['description']) || $qty > 0 || $unitPrice > 0) {
+                $desc = trim($item['description'] ?? '');
+
+                if ($desc !== '' || $qty > 0 || $unitPrice > 0) {
+                    $formattedQty = $rawQty !== '' ? $rawQty : ($qty > 0 ? (floor($qty) == $qty ? (int)$qty : number_format($qty, 2, ',', '.')) : '1');
                     $processedItems[] = [
-                        'quantity'    => $qty > 0 ? (floor($qty) == $qty ? (int)$qty : number_format($qty, 2, ',', '.')) : '',
-                        'description' => $item['description'] ?? '',
-                        'unit_price'  => $unitPrice > 0 ? 'R$ ' . number_format($unitPrice, 2, ',', '.') : '',
-                        'total_price' => $totalPrice > 0 ? 'R$ ' . number_format($totalPrice, 2, ',', '.') : 'R$ -',
+                        'quantity'    => $formattedQty,
+                        'description' => $desc,
+                        'unit_price'  => $unitPrice > 0 ? 'R$ ' . number_format($unitPrice, 2, ',', '.') : ($item['unit_price'] ?? 'R$ 0,00'),
+                        'total_price' => $totalPrice > 0 ? 'R$ ' . number_format($totalPrice, 2, ',', '.') : 'R$ 0,00',
                     ];
                 }
             }
@@ -286,7 +290,8 @@ class QuoteController extends Controller
         $grandTotal = 0;
         if (!empty($data['items'])) {
             foreach ($data['items'] as $item) {
-                $qty = (float) str_replace(',', '.', $item['quantity'] ?? 0);
+                $rawQty = trim($item['quantity'] ?? '1');
+                $qty = (float) str_replace(',', '.', $rawQty);
                 
                 $unitPriceStr = preg_replace('/[^\d.,]/', '', $item['unit_price'] ?? '0');
                 if (strpos($unitPriceStr, ',') !== false && strpos($unitPriceStr, '.') !== false) {
@@ -299,12 +304,15 @@ class QuoteController extends Controller
                 $totalPrice = $qty * $unitPrice;
                 $grandTotal += $totalPrice;
 
-                if (!empty($item['description']) || $qty > 0 || $unitPrice > 0) {
+                $desc = trim($item['description'] ?? '');
+
+                if ($desc !== '' || $qty > 0 || $unitPrice > 0) {
+                    $formattedQty = $rawQty !== '' ? $rawQty : ($qty > 0 ? (floor($qty) == $qty ? (int)$qty : number_format($qty, 2, ',', '.')) : '1');
                     $processedItems[] = [
-                        'quantity'    => $qty > 0 ? (floor($qty) == $qty ? (int)$qty : number_format($qty, 2, ',', '.')) : '',
-                        'description' => $item['description'] ?? '',
-                        'unit_price'  => $unitPrice > 0 ? 'R$ ' . number_format($unitPrice, 2, ',', '.') : '',
-                        'total_price' => $totalPrice > 0 ? 'R$ ' . number_format($totalPrice, 2, ',', '.') : 'R$ -',
+                        'quantity'    => $formattedQty,
+                        'description' => $desc,
+                        'unit_price'  => $unitPrice > 0 ? 'R$ ' . number_format($unitPrice, 2, ',', '.') : ($item['unit_price'] ?? 'R$ 0,00'),
+                        'total_price' => $totalPrice > 0 ? 'R$ ' . number_format($totalPrice, 2, ',', '.') : 'R$ 0,00',
                     ];
                 }
             }
