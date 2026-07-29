@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\CategoryStatusController;
 use App\Http\Controllers\Admin\LandingImageController;
+use App\Http\Controllers\Admin\QuoteController;
 
 // ── Public routes ─────────────────────────────────────────────────────────────
 Route::get('/', function () {
@@ -67,5 +68,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/imagens', [LandingImageController::class, 'store'])->name('images.store');
         Route::put('/imagens/{landingImage}', [LandingImageController::class, 'update'])->name('images.update');
         Route::delete('/imagens/{landingImage}', [LandingImageController::class, 'destroy'])->name('images.destroy');
+
+        // Quote / Orçamento Generator
+        Route::get('/orcamento', [QuoteController::class, 'create'])->name('quotes.create');
+        Route::post('/orcamento/imprimir', [QuoteController::class, 'print'])->name('quotes.print');
     });
 });

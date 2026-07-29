@@ -94,6 +94,39 @@
             </div>
         </div>
 
+        {{-- Quote Settings --}}
+        <div class="card">
+            <div class="card-header" style="display:flex; align-items:center; gap:8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                <span class="card-title">Gerador de Orçamento - Dados & Imagens Padrão</span>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-2">
+                    @foreach($settings->get('quote', collect()) as $s)
+                        <div class="form-group" style="{{ $s->type === 'textarea' ? 'grid-column: span 2;' : '' }}">
+                            <label class="form-label">{{ $s->label }}</label>
+                            @if($s->type === 'file')
+                                <div style="display:flex; flex-direction:column; gap:8px;">
+                                    <input type="file" name="{{ $s->key }}" class="form-control" accept="image/*">
+                                    @if(!empty($s->value))
+                                        <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                                            <span style="font-size:12px; color:var(--text-muted);">Atual:</span>
+                                            <img src="{{ asset($s->value) }}" alt="{{ $s->label }}" style="max-height:50px; max-width:140px; object-fit:contain; border:1px solid var(--border); border-radius:4px; padding:2px; background:#fff;">
+                                            <span style="font-size:12px; color:var(--text-muted); font-family:monospace;">{{ $s->value }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            @elseif($s->type === 'textarea')
+                                <textarea name="{{ $s->key }}" rows="4" class="form-control">{{ old($s->key, $s->value) }}</textarea>
+                            @else
+                                <input type="text" name="{{ $s->key }}" class="form-control" value="{{ old($s->key, $s->value) }}">
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
         <div style="display:flex; justify-content:flex-end;">
             <button type="submit" class="btn btn-primary" style="padding:12px 28px; font-size:15px; display:inline-flex; align-items:center; gap:8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
