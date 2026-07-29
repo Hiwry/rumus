@@ -395,7 +395,7 @@ class QuoteController extends Controller
         }
 
         $items = $quote->items ?? [];
-        $minRows = 12;
+        $minRows = 7;
         $totalItemsCount = count($items);
         for ($i = $totalItemsCount; $i < $minRows; $i++) {
             $items[] = [

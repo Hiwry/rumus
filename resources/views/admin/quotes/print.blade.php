@@ -25,15 +25,19 @@
 
         .page-container {
             width: 210mm;
-            min-height: 297mm;
+            height: 285mm;
+            max-height: 285mm;
             background: #ffffff;
             margin: 0 auto;
-            padding: 12mm 15mm;
+            padding: 8mm 12mm;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            overflow: hidden;
+            page-break-after: avoid;
+            page-break-inside: avoid;
         }
 
         /* ── Action Bar for Print ────────────────────────────────────────── */
@@ -114,22 +118,22 @@
         }
 
         .logo-img {
-            max-height: 140px;
-            max-width: 380px;
+            max-height: 110px;
+            max-width: 340px;
             object-fit: contain;
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .banner-orcamento {
             background: #000000;
             color: #ffffff;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
-            padding: 6px 14px;
-            margin-top: 6px;
+            padding: 5px 12px;
+            margin-top: 4px;
             display: inline-block;
             width: 100%;
             text-align: center;
@@ -140,7 +144,7 @@
             text-align: right;
             font-size: 13px;
             font-weight: 700;
-            line-height: 1.4;
+            line-height: 1.35;
         }
 
         .company-name {
@@ -151,7 +155,7 @@
         .header-meta {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
+            margin-top: 8px;
             font-size: 14px;
             font-weight: 800;
         }
@@ -160,13 +164,13 @@
         .details-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 8px;
-            margin-bottom: 8px;
+            margin-top: 6px;
+            margin-bottom: 6px;
         }
 
         .details-table td {
-            padding: 4px 6px;
-            font-size: 14px;
+            padding: 3px 6px;
+            font-size: 13.5px;
             border-bottom: 1px dotted #000;
             vertical-align: bottom;
         }
@@ -188,8 +192,8 @@
 
         .items-table th {
             border: 1px dotted #000;
-            padding: 7px 8px;
-            font-size: 14px;
+            padding: 6px 8px;
+            font-size: 13.5px;
             font-weight: 800;
             text-transform: uppercase;
             background: #ffffff;
@@ -199,9 +203,9 @@
             border-left: 1px dotted #000;
             border-right: 1px dotted #000;
             border-bottom: 1px dotted #000;
-            padding: 5px 8px;
+            padding: 4px 8px;
             font-size: 13px;
-            height: 26px;
+            height: 24px;
             vertical-align: middle;
         }
 
@@ -214,26 +218,26 @@
         .summary-row td {
             border-top: 1px dotted #000;
             border-bottom: 1px dotted #000;
-            padding: 8px;
-            font-size: 14px;
+            padding: 6px 8px;
+            font-size: 13.5px;
             font-weight: 700;
         }
 
         .delivery-notice {
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             color: #006633;
-            margin: 10px 0 12px 0;
+            margin: 6px 0 8px 0;
             text-transform: uppercase;
         }
 
         .observations-box {
             color: #e00000;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 700;
-            line-height: 1.35;
-            margin-bottom: 16px;
+            line-height: 1.3;
+            margin-bottom: 10px;
             text-align: justify;
         }
 
@@ -242,8 +246,9 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 12px;
-            padding-top: 10px;
+            margin-top: 6px;
+            padding-top: 6px;
+            page-break-inside: avoid;
         }
 
         .stamp-col {
@@ -251,14 +256,14 @@
         }
 
         .stamp-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .stamp-img {
-            max-height: 180px;
-            max-width: 340px;
+            max-height: 130px;
+            max-width: 320px;
             object-fit: contain;
         }
 
@@ -268,27 +273,27 @@
         }
 
         .date-line {
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 700;
-            margin-bottom: 14px;
+            margin-bottom: 8px;
             text-align: right;
         }
 
         .signature-img {
-            max-height: 110px;
-            max-width: 280px;
+            max-height: 75px;
+            max-width: 260px;
             object-fit: contain;
             display: block;
-            margin: 0 auto 6px auto;
+            margin: 0 auto 4px auto;
         }
 
         .signer-name {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
         }
 
         .signer-role {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #333;
         }
 
@@ -487,11 +492,12 @@
                     const filename = `Orcamento_N${quoteNum}_${clientName}.pdf`;
 
                     const opt = {
-                        margin:       [5, 5, 5, 5],
+                        margin:       [0, 0, 0, 0],
                         filename:     filename,
                         image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, logging: false },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        html2canvas:  { scale: 2, useCORS: true, logging: false, scrollY: 0 },
+                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
                     };
 
                     downloadBtn.disabled = true;
