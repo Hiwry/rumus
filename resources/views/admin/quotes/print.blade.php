@@ -359,7 +359,6 @@
                 <div class="company-box">
                     <div class="company-name">{{ $data['company_name'] ?? 'CONFECÇÕES NÓBREGA LTDA - EPP' }}</div>
                     <div>CNPJ: {{ $data['company_cnpj'] ?? '07.149.307/0002-89' }}</div>
-                    <div>INSC. ESTADUAL: {{ $data['company_ie'] ?? '242.15525-1' }}</div>
                     <div>RUA: {{ $data['company_address'] ?? 'RUA DO IMPERADOR, 312' }}</div>
                     <div>CEP: {{ $data['company_cep'] ?? '57020-030' }} &nbsp;&nbsp;&nbsp;&nbsp; FONE: {{ $data['company_phone'] ?? '3336-7272' }}</div>
 

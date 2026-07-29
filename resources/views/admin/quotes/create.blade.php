@@ -195,7 +195,7 @@
                 </div>
                 <button type="button" class="btn btn-secondary" id="addItemBtn" style="padding:8px 16px; font-size:13px; font-weight:700; display:inline-flex; align-items:center; gap:6px;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    + Adicionar Item
+                    Adicionar Item
                 </button>
             </div>
             
@@ -214,7 +214,7 @@
                         <tr class="item-row">
                             <td class="td-qty">
                                 <span class="mobile-cell-label">Quantidade</span>
-                                <input type="number" step="any" min="0" inputmode="decimal" name="items[0][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" required>
+                                <input type="number" step="any" min="0" inputmode="decimal" name="items[0][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" onfocus="this.select()" required>
                             </td>
                             <td class="td-desc">
                                 <span class="mobile-cell-label">Descrição do Produto/Serviço</span>
@@ -222,7 +222,7 @@
                             </td>
                             <td class="td-price">
                                 <span class="mobile-cell-label">Valor Unitário (R$)</span>
-                                <input type="text" inputmode="decimal" name="items[0][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="45,00" required>
+                                <input type="text" inputmode="decimal" name="items[0][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="45,00" onfocus="this.select()" required>
                             </td>
                             <td class="td-total" style="text-align:right; font-weight:700; vertical-align:middle;">
                                 <span class="mobile-cell-label">Subtotal</span>
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tr.innerHTML = `
             <td class="td-qty">
                 <span class="mobile-cell-label">Quantidade</span>
-                <input type="number" step="any" min="0" inputmode="decimal" name="items[${itemIndex}][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" required>
+                <input type="number" step="any" min="0" inputmode="decimal" name="items[${itemIndex}][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" onfocus="this.select()" required>
             </td>
             <td class="td-desc">
                 <span class="mobile-cell-label">Descrição do Produto/Serviço</span>
@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </td>
             <td class="td-price">
                 <span class="mobile-cell-label">Valor Unitário (R$)</span>
-                <input type="text" inputmode="decimal" name="items[${itemIndex}][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="0,00" required>
+                <input type="text" inputmode="decimal" name="items[${itemIndex}][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="" onfocus="this.select()" required>
             </td>
             <td class="td-total" style="text-align:right; font-weight:700; vertical-align:middle;">
                 <span class="mobile-cell-label">Subtotal</span>

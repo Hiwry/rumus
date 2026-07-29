@@ -232,7 +232,7 @@
                             <tr class="item-row">
                                 <td class="td-qty">
                                     <span class="mobile-cell-label">Quantidade</span>
-                                    <input type="number" step="any" min="0" inputmode="decimal" name="items[{{ $idx }}][quantity]" class="form-control item-qty text-center" value="{{ $item['quantity'] ?? '1' }}" required>
+                                    <input type="number" step="any" min="0" inputmode="decimal" name="items[{{ $idx }}][quantity]" class="form-control item-qty text-center" value="{{ $item['quantity'] ?? '1' }}" onfocus="this.select()" required>
                                 </td>
                                 <td class="td-desc">
                                     <span class="mobile-cell-label">Descrição do Produto/Serviço</span>
@@ -240,7 +240,7 @@
                                 </td>
                                 <td class="td-price">
                                     <span class="mobile-cell-label">Valor Unitário (R$)</span>
-                                    <input type="text" inputmode="decimal" name="items[{{ $idx }}][unit_price]" class="form-control item-price text-right" value="{{ $item['unit_price'] ?? '0,00' }}" required>
+                                    <input type="text" inputmode="decimal" name="items[{{ $idx }}][unit_price]" class="form-control item-price text-right" value="{{ $item['unit_price'] ?? '0,00' }}" onfocus="this.select()" required>
                                 </td>
                                 <td class="td-total" style="text-align:right; font-weight:700; vertical-align:middle;">
                                     <span class="mobile-cell-label">Subtotal</span>
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tr.innerHTML = `
             <td class="td-qty">
                 <span class="mobile-cell-label">Quantidade</span>
-                <input type="number" step="any" min="0" inputmode="decimal" name="items[${itemIndex}][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" required>
+                <input type="number" step="any" min="0" inputmode="decimal" name="items[${itemIndex}][quantity]" class="form-control item-qty text-center" value="1" placeholder="1" onfocus="this.select()" required>
             </td>
             <td class="td-desc">
                 <span class="mobile-cell-label">Descrição do Produto/Serviço</span>
@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </td>
             <td class="td-price">
                 <span class="mobile-cell-label">Valor Unitário (R$)</span>
-                <input type="text" inputmode="decimal" name="items[${itemIndex}][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="0,00" required>
+                <input type="text" inputmode="decimal" name="items[${itemIndex}][unit_price]" class="form-control item-price text-right" placeholder="0,00" value="" onfocus="this.select()" required>
             </td>
             <td class="td-total" style="text-align:right; font-weight:700; vertical-align:middle;">
                 <span class="mobile-cell-label">Subtotal</span>
