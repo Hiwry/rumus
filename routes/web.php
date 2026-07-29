@@ -69,8 +69,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/imagens/{landingImage}', [LandingImageController::class, 'update'])->name('images.update');
         Route::delete('/imagens/{landingImage}', [LandingImageController::class, 'destroy'])->name('images.destroy');
 
-        // Quote / Orçamento Generator
-        Route::get('/orcamento', [QuoteController::class, 'create'])->name('quotes.create');
-        Route::post('/orcamento/imprimir', [QuoteController::class, 'print'])->name('quotes.print');
+        // Quote / Orçamento Manager & Generator
+        Route::get('/orcamentos', [QuoteController::class, 'index'])->name('quotes.index');
+        Route::get('/orcamentos/novo', [QuoteController::class, 'create'])->name('quotes.create');
+        Route::post('/orcamentos', [QuoteController::class, 'store'])->name('quotes.store');
+        Route::get('/orcamentos/{quote}/editar', [QuoteController::class, 'edit'])->name('quotes.edit');
+        Route::put('/orcamentos/{quote}', [QuoteController::class, 'update'])->name('quotes.update');
+        Route::patch('/orcamentos/{quote}/status', [QuoteController::class, 'updateStatus'])->name('quotes.status');
+        Route::delete('/orcamentos/{quote}', [QuoteController::class, 'destroy'])->name('quotes.destroy');
+        Route::get('/orcamentos/{quote}/imprimir', [QuoteController::class, 'print'])->name('quotes.print');
     });
 });
