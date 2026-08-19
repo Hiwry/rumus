@@ -366,6 +366,59 @@ class QuoteController extends Controller
     }
 
     /**
+     * Convert a quote into an official order.
+     */
+    public function convertToOrder(Quote $quote)
+    {
+        // If already converted, redirect to existing order
+        if ($quote->converted_to_order_id) {
+            return redirect()->route('admin.orders.show', $quote->converted_to_order_id)
+                             ->with('info', 'Este orçamento já foi convertido no Pedido #' . $quote->order?->order_number);
+        }
+
+        // Build product summary description from items if available
+        $itemDescriptions = [];
+        if (!empty($quote->items)) {
+            foreach ($quote->items as $item) {
+                if (!empty($item['description'])) {
+                    $itemDescriptions[] = ($item['quantity'] ?? '1') . 'x ' . $item['description'] . (!empty($item['unit_price']) ? ' (' . $item['unit_price'] . ')' : '');
+                }
+            }
+        }
+
+        $productName = !empty($itemDescriptions) ? implode(' | ', $itemDescriptions) : ($quote->referent ?: 'Orçamento #' . $quote->quote_number);
+        if (mb_strlen($productName) > 250) {
+            $productName = mb_substr($productName, 0, 247) . '...';
+        }
+
+        $notes = "Convertido do Orçamento #" . $quote->quote_number;
+        if (!empty($quote->observations)) {
+            $notes .= "\nObs. Orçamento: " . $quote->observations;
+        }
+
+        $order = \App\Models\Order::create([
+            'order_number'   => \App\Models\Order::generateOrderNumber(),
+            'customer_name'  => $quote->client_name ?: 'Cliente Orçamento #' . $quote->quote_number,
+            'customer_phone' => $quote->client_contact,
+            'customer_email' => $quote->client_email,
+            'product_name'   => $productName,
+            'quantity'       => 1,
+            'unit_price'     => $quote->total_amount,
+            'total_price'    => $quote->total_amount,
+            'status'         => 'pending',
+            'notes'          => $notes,
+        ]);
+
+        $quote->update([
+            'status'                => 'approved',
+            'converted_to_order_id' => $order->id,
+        ]);
+
+        return redirect()->route('admin.orders.show', $order->id)
+                         ->with('success', 'Orçamento #' . $quote->quote_number . ' transformado no Pedido ' . $order->order_number . ' com sucesso!');
+    }
+
+    /**
      * Render the print-ready budget document for a saved quote.
      */
     public function print(Quote $quote, Request $request)

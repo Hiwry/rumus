@@ -104,4 +104,19 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index')
                          ->with('success', 'Pedido excluído com sucesso!');
     }
+
+    public function print(Order $order)
+    {
+        $order->load('product');
+        $quote = Quote::where('converted_to_order_id', $order->id)->first();
+        
+        $settings = \App\Models\SiteSetting::getAllAsArray();
+        $images = [
+            'logo'      => $settings['quote_logo'] ?? ($settings['site_logo'] ?? ''),
+            'stamp'     => $settings['quote_stamp'] ?? '',
+            'signature' => $settings['quote_signature'] ?? '',
+        ];
+
+        return view('admin.orders.print', compact('order', 'quote', 'images', 'settings'));
+    }
 }

@@ -29,7 +29,13 @@ class Quote extends Model
         'signer_name',
         'signer_role',
         'status',
+        'converted_to_order_id',
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'converted_to_order_id');
+    }
 
     protected $casts = [
         'quote_date'   => 'date',

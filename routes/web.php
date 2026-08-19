@@ -50,6 +50,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/pedidos/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::patch('/pedidos/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
         Route::delete('/pedidos/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+        Route::get('/pedidos/{order}/imprimir', [OrderController::class, 'print'])->name('orders.print');
 
         // Settings
         Route::get('/configuracoes', [SettingsController::class, 'index'])->name('settings.index');
@@ -76,6 +77,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/orcamentos/{quote}/editar', [QuoteController::class, 'edit'])->name('quotes.edit');
         Route::put('/orcamentos/{quote}', [QuoteController::class, 'update'])->name('quotes.update');
         Route::patch('/orcamentos/{quote}/status', [QuoteController::class, 'updateStatus'])->name('quotes.status');
+        Route::post('/orcamentos/{quote}/converter-pedido', [QuoteController::class, 'convertToOrder'])->name('quotes.convert');
         Route::delete('/orcamentos/{quote}', [QuoteController::class, 'destroy'])->name('quotes.destroy');
         Route::get('/orcamentos/{quote}/imprimir', [QuoteController::class, 'print'])->name('quotes.print');
     });

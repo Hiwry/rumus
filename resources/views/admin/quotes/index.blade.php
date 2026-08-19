@@ -208,6 +208,22 @@
                                 </td>
                                 <td style="text-align:center;">
                                     <div style="display:flex; justify-content:center; gap:6px;">
+                                        {{-- Convert to Order --}}
+                                        @if($quote->converted_to_order_id)
+                                            <a href="{{ route('admin.orders.show', $quote->converted_to_order_id) }}" class="btn btn-outline" style="padding:6px 10px; font-size:12px; color:#16a34a; border-color:#86efac; display:inline-flex; align-items:center; gap:4px;" title="Ver Pedido Gerado">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                                Pedido
+                                            </a>
+                                        @else
+                                            <form method="POST" action="{{ route('admin.quotes.convert', $quote->id) }}" onsubmit="return confirm('Deseja transformar este orçamento no Pedido Oficial?');" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary" style="padding:6px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px; background:#16a34a; border-color:#16a34a;" title="Gerar Pedido a partir deste orçamento">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                                                    Virar Pedido
+                                                </button>
+                                            </form>
+                                        @endif
+
                                         {{-- Ver / Reimprimir / PDF --}}
                                         <a href="{{ route('admin.quotes.print', $quote->id) }}" target="_blank" class="btn btn-secondary" style="padding:6px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;" title="Ver / PDF">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>

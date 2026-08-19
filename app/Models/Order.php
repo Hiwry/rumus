@@ -26,6 +26,11 @@ class Order extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function quote()
+    {
+        return $this->hasOne(Quote::class, 'converted_to_order_id');
+    }
+
     public static function generateOrderNumber(): string
     {
         return 'RMS-' . strtoupper(substr(uniqid(), -6));

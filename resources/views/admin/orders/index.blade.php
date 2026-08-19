@@ -83,6 +83,10 @@
                         <td data-label="Data" style="font-size:12px; color:var(--text-muted);">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                         <td data-label="Ações">
                             <div style="display:flex; gap:6px;">
+                                <a href="{{ route('admin.orders.print', $order) }}" target="_blank" class="btn btn-secondary btn-xs" style="display:inline-flex; align-items:center; gap:3px;" title="Ver / PDF do Pedido">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    PDF
+                                </a>
                                 <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-outline btn-xs">Ver</a>
                                 <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" onsubmit="return confirm('Excluir este pedido?');">
                                     @csrf @method('DELETE')
