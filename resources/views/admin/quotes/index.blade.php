@@ -215,13 +215,14 @@
                                                 Pedido
                                             </a>
                                         @else
-                                            <form method="POST" action="{{ route('admin.quotes.convert', $quote->id) }}" onsubmit="return confirm('Deseja transformar este orçamento no Pedido Oficial?');" style="display:inline;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-primary" style="padding:6px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px; background:#16a34a; border-color:#16a34a;" title="Gerar Pedido a partir deste orçamento">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                                                    Virar Pedido
-                                                </button>
-                                            </form>
+                                            <button type="button" 
+                                                    onclick="openConvertModal('{{ route('admin.quotes.convert', $quote->id) }}', '#{{ $quote->quote_number }}', '{{ e($quote->client_name) }}', '{{ $quote->formatted_total }}')" 
+                                                    class="btn btn-primary" 
+                                                    style="padding:6px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px; background:#16a34a; border-color:#16a34a;" 
+                                                    title="Gerar Pedido a partir deste orçamento">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                                                Virar Pedido
+                                            </button>
                                         @endif
 
                                         {{-- Ver / Reimprimir / PDF --}}
@@ -269,4 +270,61 @@
     </div>
 
 </div>
+
+{{-- Custom Confirmation Modal --}}
+<div id="convertOrderModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:9999; backdrop-filter:blur(3px); align-items:center; justify-content:center;">
+    <div style="background:#ffffff; width:90%; max-width:440px; border-radius:12px; padding:24px; box-shadow:0 20px 25px -5px rgba(0, 0, 0, 0.2); animation: modalScale 0.2s ease-out;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+            <div style="width:40px; height:40px; border-radius:50%; background:#dcfce7; color:#16a34a; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </div>
+            <div>
+                <h3 style="font-size:17px; font-weight:800; color:#111827; margin:0;">Transformar em Pedido</h3>
+                <p style="font-size:13px; color:#6b7280; margin:2px 0 0 0;">Confirmação de geração de pedido</p>
+            </div>
+        </div>
+
+        <div style="background:#f9fafb; border:1px solid #f3f4f6; border-radius:8px; padding:14px; margin-bottom:20px; font-size:13px; color:#374151; line-height:1.5;">
+            Deseja transformar o orçamento <strong id="modalQuoteNumber" style="color:#111;">#0000</strong> do cliente <strong id="modalClientName" style="color:#111;">Cliente</strong> (<span id="modalTotalAmount" style="font-weight:700; color:#16a34a;">R$ 0,00</span>) em um <strong>Pedido Oficial</strong>?
+        </div>
+
+        <form id="convertOrderForm" method="POST" action="">
+            @csrf
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" onclick="closeConvertModal()" class="btn btn-outline" style="padding:9px 18px; font-size:13px; font-weight:600;">Cancelar</button>
+                <button type="submit" class="btn btn-primary" style="padding:9px 20px; font-size:13px; font-weight:700; background:#16a34a; border-color:#16a34a;">Confirmar e Gerar Pedido</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    @keyframes modalScale {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+</style>
+
+<script>
+    function openConvertModal(actionUrl, quoteNumber, clientName, totalAmount) {
+        document.getElementById('convertOrderForm').action = actionUrl;
+        document.getElementById('modalQuoteNumber').textContent = quoteNumber;
+        document.getElementById('modalClientName').textContent = clientName || 'Cliente';
+        document.getElementById('modalTotalAmount').textContent = totalAmount || '';
+        
+        const modal = document.getElementById('convertOrderModal');
+        modal.style.display = 'flex';
+    }
+
+    function closeConvertModal() {
+        const modal = document.getElementById('convertOrderModal');
+        modal.style.display = 'none';
+    }
+
+    document.getElementById('convertOrderModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeConvertModal();
+        }
+    });
+</script>
 @endsection
